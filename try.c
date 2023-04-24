@@ -4,12 +4,13 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#define MAX_THREADS 32
+#define MAX_THREADS 8
 #define BLOCK_SIZE 1024
 
 typedef struct {
     char *data;
     int key;
+    int index; // added index to keep track of the block order
 } Block;
 
 typedef struct {
@@ -65,10 +66,11 @@ void* worker(void *arg) {
     while (1) {
         Block block = get_block(pool);
         encrypt(block.data, block.key);
+        printf("Block %d: %s\n", block.index, block.data); // print block data with index
+        fflush(stdout); // flush stdout to ensure output order
     }
     return NULL;
 }
-
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         printf("usage: key < file \n");
@@ -77,7 +79,7 @@ int main(int argc, char *argv[]) {
     }
 
     int key = atoi(argv[1]);
-    printf("key is %i \n",key);
+    printf("key is %i \n", key);
 
     ThreadPool pool;
     init_thread_pool(&pool, MAX_THREADS);
@@ -91,23 +93,44 @@ int main(int argc, char *argv[]) {
     char c;
     int counter = 0;
     char block_data[BLOCK_SIZE];
+    char *output_data = NULL; // Initialize the pointer to the output data
+    int output_size = 0; // Initialize the size of the output data to 0
+    int current_block_index = 0;
+
     while ((c = getchar()) != EOF) {
         block_data[counter++] = c;
         if (counter == BLOCK_SIZE) {
-            Block block;
-            block.data = block_data;
-            block.key = key;
-            add_block(&pool, block);
+            Block* block = (Block*)malloc(sizeof(Block));
+            block->data = block_data;
+            block->key = key;
+            block->index = current_block_index++;
+            add_block(&pool, *block);
             counter = 0;
             block_data[0] = '\0';
         }
     }
+
+    // Check if there is any data left to encrypt
     if (counter > 0) {
         Block block;
         block.data = block_data;
         block.key = key;
         add_block(&pool, block);
     }
+
+    // Wait for the threads to finish encrypting all the data
+    while (pool.size > 0) {
+        Block block = get_block(&pool);
+        encrypt(block.data, block.key);
+
+        // Add the encrypted data to the output buffer
+        output_data = realloc(output_data, output_size + strlen(block.data) + 1);
+        strcpy(output_data + output_size, block.data);
+        output_size += strlen(block.data);
+    }
+
+    // Print the encrypted output in order
+    printf("encrypted data:\n %s\n", output_data);
 
     for (int i = 0; i < MAX_THREADS; i++) {
         pthread_cancel(threads[i]);
