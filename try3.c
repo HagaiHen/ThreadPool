@@ -27,20 +27,27 @@ int main(int argc, char *argv[]) {
     while ((c = getchar()) != EOF) {
         block_data[counter++] = c;
         if (counter == BLOCK_SIZE) {
-            printf("got a new job!\n");
-            fflush(stdout);
             enqueue(pool->queue, block_data, key, ENCRYPT);  // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
             pthread_cond_signal(&pool->cond);
             counter = 0;
             block_data[0] = '\0';
+            printf("\ngot a new job!\n");
+            fflush(stdout);
         }
     }
-
+    // printf("\nout\n");
     // Check if there is any data left to encrypt
     if (counter > 0) {
         enqueue(pool->queue, block_data, key, ENCRYPT);  // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
         pthread_cond_signal(&pool->cond);
     }
+    // printf("\nout1\n");
+    // Wait for the threads to finish processing all the data
+    for (int i = 0; i < pool->pool_size; i++) {
+        pthread_join(pool->threads[i], NULL);
+    }
+    // printf("\nout2\n");
+
 
 //  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< need to wait for everyone(threads) to finish
 

@@ -43,15 +43,19 @@ void handle_task(ThreadPool* pool){
 
 
 void* thread_handler(void* arg) {
+    
     ThreadPool* pool = (ThreadPool*) arg;
+    
     while (1)
     {
+        // pthread_mutex_lock(&pool->queue->lock);
         while (pool->queue->size == 0)
         {
             pthread_cond_wait(&pool->cond, &pool->lock);
         }
         handle_task(pool);
         printf("Thread %ld finished.\n",(long)pthread_self());
+        // pthread_mutex_unlock(&pool->queue->lock);
     }
 }
 

@@ -63,6 +63,7 @@ void enqueue(Queue* q, char item[BLOCK_SIZE], int key, int job) {
     
     pthread_cond_signal(&q->empty);
     pthread_mutex_unlock(&q->lock);
+    printf("\nqueue size: %d\n", q->size);
 }
 
 char* dequeue(Queue* q) {
@@ -77,6 +78,7 @@ char* dequeue(Queue* q) {
     free(temp);
     q->size--;
     pthread_mutex_unlock(&q->lock);
+    printf("\nqueue size: %d\n", q->size);
     return dequeue_data;
 }
 
