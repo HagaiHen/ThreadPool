@@ -15,8 +15,6 @@ typedef struct ThreadPool{
     Queue *queue;
     my_thread* threads;
     int pool_size;
-    pthread_mutex_t lock;
-    pthread_cond_t cond;
 } ThreadPool;
 
 
@@ -67,7 +65,7 @@ void* thread_handler(void* arg) {
     
     while (1)
     {
-        pthread_cond_wait(&pool->threads[index].cond, &pool->lock);
+        pthread_cond_wait(&pool->threads[index].cond, &pool->threads[index].bussy_lock);
         if (pool->queue->size > 0)
         {
             handle_task(pool);
@@ -99,6 +97,4 @@ void init_thread_pool(ThreadPool *pool) {
         // pthread_detach(pool->threads[i]);
     }
     
-    pthread_mutex_init(&pool->lock, NULL);
-    pthread_cond_init(&pool->cond, NULL);
 }

@@ -5,9 +5,9 @@
 
 
 void signal_thread(ThreadPool* pool, int thread_index) {
-    pthread_mutex_lock(&(pool->lock));
+    // pthread_mutex_lock(&(pool->threads[thread_index].bussy_lock));
     pthread_cond_signal(&(pool->threads[thread_index].cond));
-    pthread_mutex_unlock(&(pool->lock));
+    // pthread_mutex_unlock(&(pool->threads[thread_index].bussy_lock));
 }
 
 int wake_free_thread(ThreadPool* pool){
