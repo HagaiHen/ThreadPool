@@ -58,7 +58,7 @@ void handle_task(ThreadPool *pool)
     // }
 
     Task *my_task = get_need_thread_to_exacute(pool->queue);
-    
+
     // if (my_task == NULL)
     // {
     //     printf("Error: invalid current task");
@@ -78,8 +78,13 @@ void handle_task(ThreadPool *pool)
     {
         continue;
     }
-    print_task(my_task);
-    dequeue(pool->queue);
+    if (pool->queue->size > 0) {
+        print_task(my_task);
+        dequeue(pool->queue);
+        
+    } else {
+        exit(0);
+    }
 }
 
 void *thread_handler(void *arg)
@@ -93,18 +98,6 @@ void *thread_handler(void *arg)
     // int bool = 1;
     while (1)
     {
-        // if (&pool->threads[index].cond == NULL)
-        // {
-        //     printf("Error: invalid pool cond");
-        //     fflush(stdout);
-        // }
-
-        // if (&pool->threads[index].bussy_lock == NULL)
-        // {
-        //     printf("Error: invalid pool lock");
-        //     fflush(stdout);
-        // }
-
         pthread_cond_wait(&pool->threads[index].cond, &pool->threads[index].bussy_lock);
         if (pool->queue->size > 0)
         {
@@ -122,6 +115,7 @@ void *thread_handler(void *arg)
                 pthread_exit(&pool->threads[i].thread);
             }
             // bool = 0;
+            exit(0);
         }
         // pthread_mutex_unlock(&pool->queue->lock);
     }

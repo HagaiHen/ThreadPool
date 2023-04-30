@@ -92,5 +92,6 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < pool->pool_size; i++) {
         pthread_join(pool->threads[i].thread, NULL);
     }
+    
     return 0;
 }
