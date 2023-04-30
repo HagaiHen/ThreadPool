@@ -47,7 +47,7 @@ void wake_all_thread(ThreadPool* pool){
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc != 3) {
         printf("usage: key < file \n");
         printf("!! data more than 1024 char will be ignored !!\n");
         return 0;
@@ -55,6 +55,19 @@ int main(int argc, char *argv[]) {
 
     int key = atoi(argv[1]);
     printf("key is %i \n", key);
+
+    int oper = -1;
+    if (!strcmp(argv[2], "-e") || !strcmp(argv[2], "-d")) {
+        if (!strcmp(argv[2], "-e")) {
+            oper = ENCRYPT;
+        } else {
+            oper = DECRYPT;
+        }
+    } else {
+        printf("Error: flag not valid. use -e or -d");
+        return 0;
+    }
+    
 
     ThreadPool* pool;
     pool = (ThreadPool*)malloc(sizeof(ThreadPool));
@@ -69,29 +82,26 @@ int main(int argc, char *argv[]) {
     while ((c = getchar()) != EOF) {
         block_data[counter++] = c;
         if (counter == BLOCK_SIZE) {
-            enqueue(pool->queue, block_data, key, ENCRYPT);  // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
-            // wake_free_thread(pool);
+            enqueue(pool->queue, block_data, key, oper);  // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
             counter = 0;
             block_data[0] = '\0';
-            printf("\ngot a new job!\n");
-            fflush(stdout);
         }
     }
-    printf("\nfinished1111111111111111111!!!!!!!\n");
-    fflush(stdout);
+    // printf("\nfinished1111111111111111111!!!!!!!\n");
+    // fflush(stdout);
     // Check if there is any data left to encrypt
     if (counter > 0) {
         enqueue(pool->queue, block_data, key, ENCRYPT);  // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
         // pthread_cond_signal(&pool->cond);
     }
     wake_all_thread(pool);
-    printf("\nfinished22222222222222222222!!!!!!!\n");
-    fflush(stdout);
+    // printf("\nfinished22222222222222222222!!!!!!!\n");
+    // fflush(stdout);
     // printf("\nout1\n");
     // Wait for the threads to finish processing all the data
     for (int i = 0; i < pool->pool_size; i++) {
         pthread_join(pool->threads[i].thread, NULL);
     }
-    
+    free(pool);
     return 0;
 }

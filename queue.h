@@ -66,25 +66,10 @@ void enqueue(Queue *q, char item[BLOCK_SIZE], int key, int job)
 
     pthread_cond_signal(&q->empty);
     pthread_mutex_unlock(&q->lock);
-    printf("\nqueue size: %d\n", q->size);
 }
 
 char *dequeue(Queue *q)
 {
-    // printf("4\n");
-    // fflush(stdout);
-    // if (&q->lock == NULL)
-    // {
-    //     printf("Error: invalid queue lock");
-    //     fflush(stdout);
-    // }
-
-    // if (q == NULL)
-    // {
-    //     printf("Error: invalid queue");
-    //     fflush(stdout);
-    // }
-
     pthread_mutex_lock(&q->lock);
     while (q->size == 0)
     {
@@ -92,34 +77,23 @@ char *dequeue(Queue *q)
     }
     bzero(dequeue_data, BLOCK_SIZE);
     strcpy(dequeue_data, q->head->data);
-    
+
     Task *temp = q->head;
-    if (q->head->next != NULL) {
+    if (q->head->next != NULL)
+    {
         q->head = q->head->next;
         free(temp);
     }
     q->size--;
 
-    printf("\nqueue size: %d\n", q->size);
     pthread_mutex_unlock(&q->lock);
     return dequeue_data;
 }
 
 Task *get_need_thread_to_exacute(Queue *q)
 {
-    // printf("5\n");
-    // fflush(stdout);
-    // if (q == NULL)
-    // {
-    //     printf("Error: invalid queue1");
-    //     fflush(stdout);
-    // }
     pthread_mutex_lock(&q->lock);
-    // if (&q->lock == NULL)
-    // {
-    //     printf("Error: invalid queue1 lock");
-    //     fflush(stdout);
-    // }
+
     Task *ans = q->need_thread_to_exacute;
 
     if (q->need_thread_to_exacute->next != NULL)
