@@ -92,27 +92,5 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < pool->pool_size; i++) {
         pthread_join(pool->threads[i].thread, NULL);
     }
-    printf("\nfinished\n");
-    fflush(stdout);
-
-//  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< need to wait for everyone(threads) to finish
-
-    // // Wait for the threads to finish encrypting all the data
-    // while (pool.size > 0) {
-    //     Block block = get_block(&pool);
-    //     encrypt(block.data, block.key);
-
-    //     // Add the encrypted data to the output buffer
-    //     output_data = realloc(output_data, output_size + strlen(block.data) + 1);
-    //     strcpy(output_data + output_size, block.data);
-    //     output_size += strlen(block.data);
-    // }
-
-    // for (int i = 0; i < MAX_THREADS; i++) {
-    //     pthread_cancel(threads[i]);
-    // }
-// 
-    // destroy_thread_pool(&pool); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
     return 0;
 }
