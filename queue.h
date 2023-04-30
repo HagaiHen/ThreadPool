@@ -82,7 +82,7 @@ char *dequeue(Queue *q)
     if (q->head->next != NULL)
     {
         q->head = q->head->next;
-        free(temp);
+        // free(temp);
     }
     q->size--;
 
