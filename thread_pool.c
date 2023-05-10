@@ -50,12 +50,12 @@ void *thread_handler(void *arg)
         if (pool->queue->size > 0)
         {
             handle_task(pool);
-            printf("Thread %ld finished.\n", (long)pthread_self());
+            // printf("Thread %ld finished.\n", (long)pthread_self());
             pool->threads[index].is_bussy = 0;
         }
     }
 
-    printf("\nENDDD\n");
+    // printf("\nENDDD\n");
 }
 
 void init_thread_pool(ThreadPool *pool)

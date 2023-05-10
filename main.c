@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     }
 
     int key = atoi(argv[1]);
-    printf("key is %i \n", key);
+    // printf("key is %i \n", key);
 
     int oper = -1;
     if (!strcmp(argv[2], "-e") || !strcmp(argv[2], "-d"))
