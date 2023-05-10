@@ -55,7 +55,6 @@ void *thread_handler(void *arg)
         }
     }
 
-    printf("\nENDDD\n");
 }
 
 void init_thread_pool(ThreadPool *pool)
