@@ -62,7 +62,7 @@ void init_thread_pool(ThreadPool *pool)
 {
     pool->queue = (Queue *)malloc(sizeof(Queue));
     init_queue(pool->queue);
-    pool->pool_size = ((int)sysconf(_SC_NPROCESSORS_ONLN) * 2) - 1; // number of cores
+    pool->pool_size = ((int)sysconf(_SC_NPROCESSORS_ONLN)); // number of cores
     pool->threads = (my_thread *)malloc(pool->pool_size * (sizeof(my_thread)));
     pthread_mutex_init(&pool->pool_lock, NULL);
     for (int i = 0; i < pool->pool_size; i++)
