@@ -43,7 +43,6 @@ void print_task(Task *my_task)
 {
     printf("%s", my_task->data);
 }
-
 void handle_task(ThreadPool *pool)
 {
     pthread_mutex_lock(&pool->pool_lock);
