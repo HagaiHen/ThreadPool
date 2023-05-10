@@ -1,12 +1,26 @@
-.PHONY: all
-all: task stdinExample
+CC = gcc
+CFLAGS = -g -Wall
 
-task:	codec.h basic_main.c
-	gcc basic_main.c -L. -l Codec -o encoder
 
-stdinExample:	stdin_main.c
-		gcc stdin_main.c -L. -l Codec -o tester
+all: main
 
-.PHONY: clean
+main: main.o queue.o
+	$(CC) $(CFLAGS) -o main main.o queue.o -L. ./libCodec.so -pthread
+
+q: queue.o queue.o
+	$(CC) $(CFLAGS) -o q queue.o queue.o
+
+queue.o: queue.c queue.h
+	$(CC) $(CFLAGS) -c queue.c
+
+main.o: main.c queue.h codec.h
+	$(CC) $(CFLAGS) -c main.c
+
+queue.o: queue.c queue.h
+	$(CC) $(CFLAGS) -c queue.c
+
+
+.PHONY: all clean
+
 clean:
-	-rm encoder tester libCodec.so 2>/dev/null
+	-rm main *.o 2>/dev/null
