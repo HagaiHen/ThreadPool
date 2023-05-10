@@ -80,10 +80,12 @@ int main(int argc, char *argv[])
     ThreadPool *pool;
     pool = (ThreadPool *)malloc(sizeof(ThreadPool));
     init_thread_pool(pool);
-
-    char c;
+    pool->key = key;
+    pool->job = oper;
+    char c; 
     int counter = 0;
     char block_data[BLOCK_SIZE];
+    memset(block_data, 0, BLOCK_SIZE);
     char *output_data = NULL; // Initialize the pointer to the output data
     int output_size = 0;      // Initialize the size of the output data to 0
 
@@ -94,7 +96,8 @@ int main(int argc, char *argv[])
         {
             enqueue(pool->queue, block_data, key, oper); // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
             counter = 0;
-            block_data[0] = '\0';
+            // block_data[0] = '\0';
+            memset(block_data, 0, BLOCK_SIZE);
         }
     }
     // printf("\nfinished1111111111111111111!!!!!!!\n");

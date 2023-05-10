@@ -44,6 +44,7 @@ void enqueue(Queue *q, char item[BLOCK_SIZE], int key, int job)
     Task *new_task = (Task *)malloc(sizeof(Task));
     new_task->job = job;
     new_task->key = key;
+
     strcpy(new_task->data, item);
     new_task->next = NULL;
 
@@ -56,15 +57,15 @@ void enqueue(Queue *q, char item[BLOCK_SIZE], int key, int job)
     else
     {
         q->tail->next = new_task;
-        q->tail = new_task;
+        q->tail = q->tail->next;
     }
     q->size++;
-    if (q->need_thread_to_exacute == NULL)
+    if (q->size == 1 && q->need_thread_to_exacute == NULL)
     {
-        q->need_thread_to_exacute = new_task;
+        q->need_thread_to_exacute = q->head;
     }
 
-    pthread_cond_signal(&q->empty);
+    // pthread_cond_signal(&q->empty);
     pthread_mutex_unlock(&q->lock);
 }
 
@@ -75,7 +76,7 @@ char *dequeue(Queue *q)
     {
         pthread_cond_wait(&q->empty, &q->lock);
     }
-    bzero(dequeue_data, BLOCK_SIZE);
+    // bzero(dequeue_data, BLOCK_SIZE);
     strcpy(dequeue_data, q->head->data);
 
     Task *temp = q->head;
@@ -101,5 +102,6 @@ Task *get_need_thread_to_exacute(Queue *q)
         q->need_thread_to_exacute = q->need_thread_to_exacute->next;
     }
     pthread_mutex_unlock(&q->lock);
+
     return ans;
 }

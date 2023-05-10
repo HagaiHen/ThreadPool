@@ -5,6 +5,8 @@
 #define ENCRYPT 1
 #define DECRYPT 2
 
+int counter = 0;
+
 typedef struct my_thread
 {
     int index;
@@ -19,6 +21,9 @@ typedef struct ThreadPool
     Queue *queue;
     my_thread *threads;
     int pool_size;
+    pthread_mutex_t pool_lock;
+    int key;
+    int job;
 } ThreadPool;
 
 typedef struct ThreadHandlerArg
@@ -48,15 +53,17 @@ void print_task(Task *my_task)
 
 void handle_task(ThreadPool *pool)
 {
+    pthread_mutex_lock(&pool->pool_lock);
     Task *my_task = get_need_thread_to_exacute(pool->queue);
-
-    if (my_task->job == ENCRYPT)
+    pthread_mutex_unlock(&pool->pool_lock);
+    // printf("\njob: %d\n", my_task->job);
+    if (pool->job == ENCRYPT)
     {
-        encrypt(my_task->data, my_task->key);
+        encrypt(my_task->data, pool->key);
     }
     else
     {
-        decrypt(my_task->data, my_task->key);
+        decrypt(my_task->data, pool->key);
     }
     // Busy wait need to improve
     while (pool->queue->head != my_task)
@@ -139,6 +146,7 @@ void init_thread_pool(ThreadPool *pool)
     init_queue(pool->queue);
     pool->pool_size = ((int)sysconf(_SC_NPROCESSORS_ONLN) * 2) - 1; // number of cores
     pool->threads = (my_thread *)malloc(pool->pool_size * (sizeof(my_thread)));
+    pthread_mutex_init(&pool->pool_lock, NULL);
     for (int i = 0; i < pool->pool_size; i++)
     {
         pool->threads[i].is_bussy = 0;
