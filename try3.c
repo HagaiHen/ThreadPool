@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     init_thread_pool(pool);
     pool->key = key;
     pool->job = oper;
-    char c; 
+    char c;
     int counter = 0;
     char block_data[BLOCK_SIZE];
     memset(block_data, 0, BLOCK_SIZE);
@@ -94,24 +94,19 @@ int main(int argc, char *argv[])
         block_data[counter++] = c;
         if (counter == BLOCK_SIZE)
         {
-            enqueue(pool->queue, block_data, key, oper); // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
+            enqueue(pool->queue, block_data); // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
             counter = 0;
             // block_data[0] = '\0';
             memset(block_data, 0, BLOCK_SIZE);
         }
     }
-    // printf("\nfinished1111111111111111111!!!!!!!\n");
-    // fflush(stdout);
     // Check if there is any data left to encrypt
     if (counter > 0)
     {
-        enqueue(pool->queue, block_data, key, oper); // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
+        enqueue(pool->queue, block_data); // need to know if its encrypt or decrypt <<<<<<<<--------------------------------------
         // pthread_cond_signal(&pool->cond);
     }
     wake_all_thread(pool);
-    // printf("\nfinished22222222222222222222!!!!!!!\n");
-    // fflush(stdout);
-    // printf("\nout1\n");
     // Wait for the threads to finish processing all the data
     for (int i = 0; i < pool->pool_size; i++)
     {

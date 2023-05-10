@@ -12,8 +12,6 @@ char dequeue_data[1024];
 typedef struct task
 {
     char data[BLOCK_SIZE];
-    int key;
-    int job;
     int thread_index;
     struct task *next;
 } Task;
@@ -39,11 +37,9 @@ void init_queue(Queue *q)
     pthread_cond_init(&q->empty, NULL);
 }
 
-void enqueue(Queue *q, char item[BLOCK_SIZE], int key, int job)
+void enqueue(Queue *q, char item[BLOCK_SIZE])
 {
     Task *new_task = (Task *)malloc(sizeof(Task));
-    new_task->job = job;
-    new_task->key = key;
 
     strcpy(new_task->data, item);
     new_task->next = NULL;

@@ -41,14 +41,7 @@ void free_thread_pool(ThreadPool *pool)
 
 void print_task(Task *my_task)
 {
-    if (my_task->job == ENCRYPT)
-    {
-        printf("%s", my_task->data);
-    }
-    else
-    {
-        printf("%s", my_task->data);
-    }
+    printf("%s", my_task->data);
 }
 
 void handle_task(ThreadPool *pool)
@@ -56,7 +49,6 @@ void handle_task(ThreadPool *pool)
     pthread_mutex_lock(&pool->pool_lock);
     Task *my_task = get_need_thread_to_exacute(pool->queue);
     pthread_mutex_unlock(&pool->pool_lock);
-    // printf("\njob: %d\n", my_task->job);
     if (pool->job == ENCRYPT)
     {
         encrypt(my_task->data, pool->key);
@@ -80,54 +72,15 @@ void handle_task(ThreadPool *pool)
         exit(0);
     }
 }
-
-// void *thread_handler(void *arg)
-// {
-//     ThreadHandlerArg *argPool = (ThreadHandlerArg *)arg;
-//     ThreadPool *pool = argPool->pool;
-//     int index = argPool->index;
-//     while (1)
-//     {
-//         pthread_cond_wait(&pool->threads[index].cond, &pool->threads[index].bussy_lock);
-//         if (pool->queue->size > 0)
-//         {
-//             handle_task(pool);
-//             pool->threads[index].is_bussy = 0;
-//         }
-
-//         // close after finish
-//         if (pool->queue->size == 0)
-//         {
-//             for (int i = 0; i < pool->pool_size; i++)
-//             {
-//                 pthread_exit(&pool->threads[i].thread);
-//             }
-//             exit(0);
-//         }
-//     }
-// }
-
 void *thread_handler(void *arg)
 {
-    // printf("3\n");
-    // fflush(stdout);
     ThreadHandlerArg *argPool = (ThreadHandlerArg *)arg;
     ThreadPool *pool = argPool->pool;
     int index = argPool->index;
     int flag = 0;
 
-    // free(arg);
-
-    // printf("\n\npid = %ld\n\nthread = %ld\n\n",pthread_self(),pool->threads[index].thread);
-    // int bool = 1;
     while (1)
     {
-        if (flag == 1 && pool->queue->size == 0)
-        {
-            // free(arg);
-            // break;
-        }
-        flag = 1;
         pthread_cond_wait(&pool->threads[index].cond, &pool->threads[index].bussy_lock);
         if (pool->queue->size > 0)
         {
@@ -136,8 +89,6 @@ void *thread_handler(void *arg)
             pool->threads[index].is_bussy = 0;
         }
     }
-
-    printf("\nENDDD\n");
 }
 
 void init_thread_pool(ThreadPool *pool)
